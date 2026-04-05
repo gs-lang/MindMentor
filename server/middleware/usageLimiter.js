@@ -1,6 +1,5 @@
 const FREE_DAILY_LIMIT = 5;
-const FREE_MENTOR_LIMIT = 1; // Free users can only access mentor ID 2 (Alex Hormozi)
-const FREE_ALLOWED_MENTOR_IDS = [2];
+const FREE_ALLOWED_MENTOR_IDS = [2]; // Free tier: Alex Hormozi only
 
 function createUsageLimiter(pool) {
   return async function usageLimiter(req, res, next) {
@@ -22,14 +21,27 @@ function createUsageLimiter(pool) {
 
       const tier = userResult.rows[0].subscription_tier;
 
-      // Pro users have no limits
-      if (tier === 'pro') {
+      // Paid users (pro/team/business) have no limits
+      if (tier && tier !== 'free') {
         return next();
       }
 
       // Free tier: check mentor restriction
-      const mentorId = req.body.mentorId || req.query.mentorId;
-      if (mentorId && !FREE_ALLOWED_MENTOR_IDS.includes(Number(mentorId))) {
+      // Support both mentorId (singular) and mentorIds (array) from different endpoints
+      let mentorIds = [];
+      if (req.body.mentorIds && Array.isArray(req.body.mentorIds)) {
+        mentorIds = req.body.mentorIds.map(Number);
+      } else if (req.body.mentorId) {
+        mentorIds = [Number(req.body.mentorId)];
+      } else if (req.query.mentorId) {
+        mentorIds = [Number(req.query.mentorId)];
+      }
+
+      const hasRestrictedMentor = mentorIds.some(
+        (id) => !FREE_ALLOWED_MENTOR_IDS.includes(id)
+      );
+
+      if (hasRestrictedMentor) {
         return res.status(403).json({
           error: 'upgrade_required',
           message: 'Upgrade to Pro to access all mentors',
