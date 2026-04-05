@@ -175,3 +175,24 @@ for i in 1 2 3 4 5 6; do
     -d "{\"question\":\"question $i\",\"mentorIds\":[2]}" | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'Q$i: {d[0][\"summary\"][:40] if isinstance(d,list) else d.get(\"error\",\"?\")}')"
 done
 ```
+
+---
+
+## Phase 1b — Frontend Integration (PaywallGate)
+
+After Phase 1 (auth live, SESSION_SECRET set, Repl restarted), run:
+
+```bash
+curl -sL https://raw.githubusercontent.com/gs-lang/MindMentor/main/setup-frontend.sh | bash
+```
+
+This script:
+1. Wraps the React root with `<AuthProvider>` so auth state is available app-wide
+2. Finds the multi-mentor chat component and patches the `onError` handler:
+   - `401` → redirects to `/login`
+   - `403` → renders `<PaywallGate limitType="mentor_access" />`
+   - `429` → renders `<PaywallGate limitType="daily_limit_reached" />`
+3. Rebuilds the frontend bundle
+
+**Prerequisites:** setup-auth-only.sh must have run first (downloads PaywallGate, AuthContext, etc.).
+
