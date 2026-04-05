@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function UpgradeButton({ label = 'Upgrade to Pro — $14.99/mo' }) {
+export default function UpgradeButton({ label = 'Upgrade to Pro — $29/mo' }) {
   const [loading, setLoading] = useState(false);
 
   const handleUpgrade = async () => {
@@ -14,10 +14,10 @@ export default function UpgradeButton({ label = 'Upgrade to Pro — $14.99/mo' }
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || 'Failed to start checkout');
+        alert(data.error || 'Billing coming soon. Contact us to upgrade.');
       }
     } catch (err) {
-      alert('Failed to start checkout. Please try again.');
+      alert('Billing coming soon. Contact us to upgrade.');
     } finally {
       setLoading(false);
     }
