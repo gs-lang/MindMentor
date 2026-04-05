@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — MindMentor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+           background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px; }
+    .card { width: 100%; max-width: 400px; background: #1e293b; border-radius: 12px;
+            padding: 32px; border: 1px solid #334155; }
+    h1 { font-size: 24px; font-weight: 700; color: #f8fafc; margin-bottom: 8px; text-align: center; }
+    p.sub { color: #64748b; text-align: center; margin-bottom: 32px; }
+    .badge { background: #1e3a5f; border: 1px solid #3b82f6; color: #60a5fa;
+             padding: 8px 16px; border-radius: 20px; font-size: 13px; text-align: center;
+             margin-bottom: 24px; }
+    label { display: block; color: #94a3b8; font-size: 14px; margin-bottom: 6px; }
+    input { width: 100%; padding: 12px 14px; background: #0f172a; border: 1px solid #334155;
+            border-radius: 8px; color: #f8fafc; font-size: 16px; margin-bottom: 16px; outline: none; }
+    input:focus { border-color: #3b82f6; }
+    button { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none;
+             border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    button:disabled { background: #1e40af; cursor: wait; }
+    .error { background: #7f1d1d; border: 1px solid #ef4444; color: #fca5a5;
+             padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
+    .footer { margin-top: 24px; text-align: center; color: #475569; font-size: 14px; }
+    .footer a { color: #3b82f6; text-decoration: none; }
+    .terms { color: #475569; font-size: 12px; text-align: center; margin-top: 16px; }
+    .back { display: block; text-align: center; margin-bottom: 24px; color: #475569; font-size: 14px; text-decoration: none; }
+    .back:hover { color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <a href="/" class="back">← Back to MindMentor</a>
+    <h1>Create Your Account</h1>
+    <p class="sub">Start with 5 free questions per day</p>
+    <div class="badge">Free plan — no credit card required</div>
+    <div class="error" id="error"></div>
+    <form id="form">
+      <label>Name</label>
+      <input type="text" id="name" placeholder="Your name" required autocomplete="name" />
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@company.com" required autocomplete="email" />
+      <label>Password</label>
+      <input type="password" id="password" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password" />
+      <button type="submit" id="btn">Create Free Account</button>
+    </form>
+    <div class="footer">
+      Already have an account? <a href="/login">Sign in</a>
+    </div>
+    <p class="terms">By creating an account you agree to our terms of service.</p>
+  </div>
+  <script>
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn');
+      const err = document.getElementById('error');
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+      err.style.display = 'none';
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: document.getElementById('email').value,
+            password: document.getElementById('password').value,
+            displayName: document.getElementById('name').value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Registration failed');
+        window.location.href = '/';
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Create Free Account';
+      }
+    });
+  </script>
+</body>
+</html>
