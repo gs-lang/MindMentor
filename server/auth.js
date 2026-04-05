@@ -1,9 +1,9 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const router = express.Router();
 
-// Assumes `pool` is passed via app.locals or injected
 function createAuthRoutes(pool) {
+  const router = express.Router();
+
   // Register
   router.post('/register', async (req, res) => {
     try {
