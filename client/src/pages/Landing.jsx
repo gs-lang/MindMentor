@@ -9,6 +9,8 @@ const MENTORS = [
   { name: 'Myron Golden', domain: 'Business Strategy', book: 'Boss Moves' },
   { name: 'Grant Cardone', domain: 'Sales & Scale', book: 'The 10X Rule' },
   { name: 'Patrick Bet-David', domain: 'Entrepreneurship', book: 'Your Next Five Moves' },
+  { name: 'Seth Godin', domain: 'Marketing & Tribes', book: 'Purple Cow' },
+  { name: 'Tim Ferriss', domain: 'Productivity & Systems', book: 'The 4-Hour Workweek' },
 ];
 
 export default function Landing() {
@@ -17,14 +19,14 @@ export default function Landing() {
       {/* Hero */}
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
         <h1 style={{ fontSize: 48, fontWeight: 800, color: '#f8fafc', marginBottom: 16, lineHeight: 1.1 }}>
-          7 World-Class Mentors.<br />One AI. Available 24/7.
+          9 World-Class Mentors.<br />One AI. Available 24/7.
         </h1>
         <p style={{ fontSize: 20, color: '#94a3b8', marginBottom: 16, maxWidth: 640, margin: '0 auto 16px' }}>
-          Ask Hormozi, Naval, Robbins, Sinek, Cardone, Golden, or Bet-David any business question.
+          Ask Hormozi, Naval, Robbins, Sinek, Cardone, Golden, Bet-David, Godin, or Ferriss any business question.
           Get answers sourced from their actual books, videos, and frameworks.
         </p>
         <p style={{ fontSize: 16, color: '#64748b', marginBottom: 40 }}>
-          Already used by Outsourced and growing teams worldwide.
+          Used by B2B sales teams, founders, and growing companies worldwide.
         </p>
 
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -109,26 +111,29 @@ export default function Landing() {
       </div>
 
       {/* Pricing */}
-      <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px 80px' }}>
-        <h2 style={{ fontSize: 32, fontWeight: 700, color: '#f8fafc', textAlign: 'center', marginBottom: 40 }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px 80px' }}>
+        <h2 style={{ fontSize: 32, fontWeight: 700, color: '#f8fafc', textAlign: 'center', marginBottom: 12 }}>
           Simple Pricing
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+        <p style={{ color: '#64748b', textAlign: 'center', marginBottom: 40 }}>
+          Start free. Upgrade when your team needs it.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
 
           {/* Free */}
           <div style={{
             background: '#1e293b',
             border: '1px solid #334155',
             borderRadius: 12,
-            padding: 32,
+            padding: 28,
           }}>
-            <h3 style={{ fontSize: 24, color: '#f8fafc', marginBottom: 8 }}>Free</h3>
-            <p style={{ fontSize: 36, fontWeight: 800, color: '#f8fafc', marginBottom: 24 }}>
-              $0<span style={{ fontSize: 16, color: '#64748b', fontWeight: 400 }}>/month</span>
+            <h3 style={{ fontSize: 20, color: '#f8fafc', marginBottom: 8 }}>Free</h3>
+            <p style={{ fontSize: 32, fontWeight: 800, color: '#f8fafc', marginBottom: 20 }}>
+              $0<span style={{ fontSize: 14, color: '#64748b', fontWeight: 400 }}>/mo</span>
             </p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px 0' }}>
               {['5 questions per day', '1 mentor (Hormozi)', 'Core Q&A features'].map((item) => (
-                <li key={item} style={{ color: '#94a3b8', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <li key={item} style={{ color: '#94a3b8', padding: '6px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: '#22c55e' }}>&#10003;</span> {item}
                 </li>
               ))}
@@ -146,7 +151,7 @@ export default function Landing() {
                 fontWeight: 600,
               }}
             >
-              Get Started
+              Get Started Free
             </Link>
           </div>
 
@@ -155,35 +160,35 @@ export default function Landing() {
             background: 'linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%)',
             border: '2px solid #3b82f6',
             borderRadius: 12,
-            padding: 32,
+            padding: 28,
             position: 'relative',
           }}>
             <div style={{
               position: 'absolute',
               top: -12,
-              right: 24,
+              right: 20,
               background: '#3b82f6',
               color: 'white',
               padding: '4px 12px',
               borderRadius: 12,
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: 700,
               textTransform: 'uppercase',
             }}>
               Most Popular
             </div>
-            <h3 style={{ fontSize: 24, color: '#f8fafc', marginBottom: 8 }}>Pro</h3>
-            <p style={{ fontSize: 36, fontWeight: 800, color: '#f8fafc', marginBottom: 24 }}>
-              $14.99<span style={{ fontSize: 16, color: '#64748b', fontWeight: 400 }}>/month</span>
+            <h3 style={{ fontSize: 20, color: '#f8fafc', marginBottom: 8 }}>Pro</h3>
+            <p style={{ fontSize: 32, fontWeight: 800, color: '#f8fafc', marginBottom: 20 }}>
+              $29<span style={{ fontSize: 14, color: '#64748b', fontWeight: 400 }}>/mo</span>
             </p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px 0' }}>
               {[
                 'Unlimited questions',
-                'All 7 mentors',
+                'All 9 mentors',
                 'Business profile analysis',
                 'Priority responses',
               ].map((item) => (
-                <li key={item} style={{ color: '#94a3b8', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <li key={item} style={{ color: '#94a3b8', padding: '6px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: '#3b82f6' }}>&#10003;</span> {item}
                 </li>
               ))}
@@ -205,48 +210,89 @@ export default function Landing() {
             </Link>
           </div>
 
+          {/* Team */}
+          <div style={{
+            background: '#1e293b',
+            border: '1px solid #334155',
+            borderRadius: 12,
+            padding: 28,
+          }}>
+            <h3 style={{ fontSize: 20, color: '#f8fafc', marginBottom: 8 }}>Team</h3>
+            <p style={{ fontSize: 32, fontWeight: 800, color: '#f8fafc', marginBottom: 20 }}>
+              $99<span style={{ fontSize: 14, color: '#64748b', fontWeight: 400 }}>/mo</span>
+            </p>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px 0' }}>
+              {[
+                'Unlimited questions',
+                'All 9 mentors',
+                'Up to 5 team seats',
+                'Business profile analysis',
+                'Team usage dashboard',
+              ].map((item) => (
+                <li key={item} style={{ color: '#94a3b8', padding: '6px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ color: '#22c55e' }}>&#10003;</span> {item}
+                </li>
+              ))}
+            </ul>
+            <Link
+              to="/register"
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                padding: '12px 24px',
+                background: '#334155',
+                color: '#f8fafc',
+                borderRadius: 8,
+                textDecoration: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Start Free, Upgrade Anytime
+            </Link>
+          </div>
+
           {/* Business */}
           <div style={{
             background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
             border: '2px solid #f59e0b',
             borderRadius: 12,
-            padding: 32,
+            padding: 28,
             position: 'relative',
           }}>
             <div style={{
               position: 'absolute',
               top: -12,
-              right: 24,
+              right: 20,
               background: '#f59e0b',
               color: '#0f172a',
               padding: '4px 12px',
               borderRadius: 12,
-              fontSize: 12,
+              fontSize: 11,
               fontWeight: 700,
               textTransform: 'uppercase',
             }}>
               Enterprise
             </div>
-            <h3 style={{ fontSize: 24, color: '#f8fafc', marginBottom: 8 }}>Business</h3>
-            <p style={{ fontSize: 36, fontWeight: 800, color: '#f8fafc', marginBottom: 24 }}>
-              $299<span style={{ fontSize: 16, color: '#64748b', fontWeight: 400 }}>/month</span>
+            <h3 style={{ fontSize: 20, color: '#f8fafc', marginBottom: 8 }}>Business</h3>
+            <p style={{ fontSize: 32, fontWeight: 800, color: '#f8fafc', marginBottom: 20 }}>
+              $299<span style={{ fontSize: 14, color: '#64748b', fontWeight: 400 }}>/mo</span>
             </p>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0' }}>
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px 0' }}>
               {[
                 'Unlimited questions',
-                'All 7 mentors',
-                'Up to 25 team seats',
+                'All 9 mentors',
+                'Up to 10 team seats',
                 'Business profile analysis',
                 'Team usage dashboard',
                 'Priority support',
               ].map((item) => (
-                <li key={item} style={{ color: '#94a3b8', padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <li key={item} style={{ color: '#94a3b8', padding: '6px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: '#f59e0b' }}>&#10003;</span> {item}
                 </li>
               ))}
             </ul>
             <a
-              href="mailto:hello@mindmentor.app?subject=Business Plan Demo"
+              href="mailto:hello@mindmentor.app?subject=Business Plan Inquiry"
               style={{
                 display: 'block',
                 textAlign: 'center',
@@ -258,7 +304,7 @@ export default function Landing() {
                 fontWeight: 700,
               }}
             >
-              Book a Demo
+              Contact Us
             </a>
           </div>
 
