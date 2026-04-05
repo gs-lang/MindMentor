@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 
 // Stripe is optional — if STRIPE_SECRET_KEY is not set, billing routes return
 // a "coming soon" response so the app still deploys and runs without Stripe.
@@ -9,15 +8,23 @@ if (!STRIPE_ENABLED) {
   console.log('[stripe] STRIPE_SECRET_KEY not set — billing routes in coming-soon mode');
 }
 
+// Map Stripe price IDs to tier names (for subscription.updated events)
+const PRICE_TO_TIER = {
+  [process.env.STRIPE_PRICE_ID_PRO]: 'pro',
+  [process.env.STRIPE_PRICE_ID_TEAM]: 'team',
+  [process.env.STRIPE_PRICE_ID_BUSINESS]: 'business',
+};
+
 function createStripeRoutes(pool) {
+  const router = express.Router();
   const appUrl = process.env.APP_URL || 'https://mindmentor.replit.app';
 
-  // Create Checkout Session for Pro subscription
+  // Create Checkout Session
   router.post('/create-checkout', async (req, res) => {
     if (!STRIPE_ENABLED) {
       return res.status(503).json({
         error: 'billing_not_configured',
-        message: 'Pro plans are coming soon. Contact us at hello@mindmentor.app to get early access.',
+        message: 'Plans are coming soon. Contact us at hello@mindmentor.app to get early access.',
       });
     }
 
@@ -38,8 +45,9 @@ function createStripeRoutes(pool) {
         return res.status(404).json({ error: 'User not found' });
       }
 
-      if (user.subscription_tier === 'pro') {
-        return res.status(400).json({ error: 'Already subscribed to Pro' });
+      // Already on a paid plan
+      if (user.subscription_tier !== 'free') {
+        return res.status(400).json({ error: 'Already subscribed to a paid plan' });
       }
 
       let customerId = user.stripe_customer_id;
@@ -52,9 +60,10 @@ function createStripeRoutes(pool) {
         await pool.query('UPDATE users SET stripe_customer_id = $1 WHERE id = $2', [customerId, userId]);
       }
 
-      const priceId = req.body.tier === 'business'
+      const requestedTier = req.body.tier || 'pro';
+      const priceId = requestedTier === 'business'
         ? process.env.STRIPE_PRICE_ID_BUSINESS
-        : req.body.tier === 'team'
+        : requestedTier === 'team'
           ? process.env.STRIPE_PRICE_ID_TEAM
           : process.env.STRIPE_PRICE_ID_PRO;
 
@@ -65,7 +74,7 @@ function createStripeRoutes(pool) {
         line_items: [{ price: priceId, quantity: 1 }],
         success_url: `${appUrl}/billing/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${appUrl}/billing/cancel`,
-        metadata: { mindmentor_user_id: String(userId), tier: req.body.tier || 'pro' },
+        metadata: { mindmentor_user_id: String(userId), tier: requestedTier },
       });
 
       res.json({ url: session.url });
@@ -96,11 +105,10 @@ function createStripeRoutes(pool) {
       if (!user || !user.stripe_customer_id) {
         return res.status(400).json({ error: 'No billing account found' });
       }
-      const portalSession = await require('stripe')(process.env.STRIPE_SECRET_KEY)
-        .billingPortal.sessions.create({
-          customer: user.stripe_customer_id,
-          return_url: `${appUrl}/`,
-        });
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: user.stripe_customer_id,
+        return_url: `${appUrl}/`,
+      });
       res.json({ url: portalSession.url });
     } catch (err) {
       console.error('Stripe portal error:', err);
@@ -133,6 +141,7 @@ function createStripeWebhookHandler(pool) {
       switch (event.type) {
         case 'checkout.session.completed': {
           const session = event.data.object;
+          // Use tier from metadata (set at checkout time) — preserves pro/team/business
           const tier = session.metadata?.tier || 'pro';
           await pool.query(
             `UPDATE users SET subscription_tier = $1, stripe_subscription_id = $2
@@ -143,11 +152,21 @@ function createStripeWebhookHandler(pool) {
         }
         case 'customer.subscription.updated': {
           const sub = event.data.object;
-          const tier = ['active', 'trialing'].includes(sub.status) ? 'pro' : 'free';
-          await pool.query(
-            'UPDATE users SET subscription_tier = $1 WHERE stripe_customer_id = $2',
-            [tier, sub.customer]
-          );
+          if (['active', 'trialing'].includes(sub.status)) {
+            // Determine tier from price ID to preserve pro/team/business on renewals
+            const priceId = sub.items?.data?.[0]?.price?.id;
+            const tier = PRICE_TO_TIER[priceId] || 'pro';
+            await pool.query(
+              'UPDATE users SET subscription_tier = $1 WHERE stripe_customer_id = $2',
+              [tier, sub.customer]
+            );
+          } else {
+            // Subscription lapsed — downgrade to free
+            await pool.query(
+              `UPDATE users SET subscription_tier = 'free' WHERE stripe_customer_id = $1`,
+              [sub.customer]
+            );
+          }
           break;
         }
         case 'customer.subscription.deleted': {
