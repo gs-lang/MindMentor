@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   display_name VARCHAR(255),
-  subscription_tier VARCHAR(20) NOT NULL DEFAULT 'free' CHECK (subscription_tier IN ('free', 'pro', 'business')),
+  subscription_tier VARCHAR(20) NOT NULL DEFAULT 'free' CHECK (subscription_tier IN ('free', 'pro', 'team', 'business')),
   stripe_customer_id VARCHAR(255),
   stripe_subscription_id VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS usage_tracking (
 
 CREATE INDEX IF NOT EXISTS idx_usage_user_date ON usage_tracking(user_id, usage_date);
 
--- Team seats table (Business tier)
--- Allows a Business subscriber to invite up to 25 team members
+-- Team seats table (Team + Business tiers)
+-- Team tier: up to 5 seats. Business tier: up to 10 seats.
 CREATE TABLE IF NOT EXISTS team_seats (
   id SERIAL PRIMARY KEY,
   owner_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -52,6 +52,17 @@ CREATE TABLE IF NOT EXISTS team_seats (
 
 CREATE INDEX IF NOT EXISTS idx_team_seats_owner ON team_seats(owner_user_id);
 CREATE INDEX IF NOT EXISTS idx_team_seats_member ON team_seats(member_user_id);
+
+-- If users table already exists with the old CHECK constraint, alter it to add 'team'
+-- (safe to run multiple times — ALTER TABLE ADD CONSTRAINT fails silently if already exists)
+DO $$
+BEGIN
+  ALTER TABLE users DROP CONSTRAINT IF EXISTS users_subscription_tier_check;
+  ALTER TABLE users ADD CONSTRAINT users_subscription_tier_check
+    CHECK (subscription_tier IN ('free', 'pro', 'team', 'business'));
+EXCEPTION WHEN others THEN
+  NULL; -- ignore if constraint manipulation fails (table may not exist yet)
+END $$;
 
 -- Updated_at trigger
 CREATE OR REPLACE FUNCTION update_updated_at_column()
